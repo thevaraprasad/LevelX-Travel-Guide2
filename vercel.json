@@ -1,6 +1,0 @@
-﻿{
-  "rewrites": [
-    { "source": "/generate-audio-guide", "destination": "/api/index" },
-    { "source": "/(.*)", "destination": "/" }
-  ]
-}
