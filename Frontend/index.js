@@ -13,7 +13,6 @@ const LOCALES = {
   Telugu: "te-IN"
 };
 
-
 // --- State ---
 const state = {
   place: '',
@@ -122,10 +121,8 @@ voiceButtons.forEach(btn => {
   });
 });
 
-
 // Generate Audio guide button Logic
-
-const GENERATE_AUDIO_GUIDE_API_URL = "http://127.0.0.1:5000/generate-audio-guide";
+const GENERATE_AUDIO_GUIDE_API_URL = "/api/index";
 
 generateButton.addEventListener('click', async () => {
   generateButton.disabled = true;
@@ -133,7 +130,10 @@ generateButton.addEventListener('click', async () => {
 
   try {
     const selectedLanguage = languageSelect.value;
-    const selectedVoice = state.voice;
+    const selectedVoiceGender = state.voice;
+
+    const voiceId = VOICES[selectedLanguage]?.[selectedVoiceGender] || "Matthew";
+    const locale = LOCALES[selectedLanguage] || "en-US";
 
     const response = await fetch(GENERATE_AUDIO_GUIDE_API_URL, {
       method: 'POST',
@@ -141,11 +141,16 @@ generateButton.addEventListener('click', async () => {
       body: JSON.stringify({
         place: state.place,
         answerType: state.length,
-        language: selectedLanguage
+        language: selectedLanguage,
+        voiceId: voiceId,
+        locale: locale
       })
     });
 
-    if (!response.ok) throw new Error('Generation failed');
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `Server responded with ${response.status}`);
+    }
 
     const data = await response.json();
 
@@ -165,7 +170,7 @@ generateButton.addEventListener('click', async () => {
 
   } catch (err) {
     console.error(err);
-    alert('Generation failed. Please check your connection.');
+    alert(`Generation failed: ${err.message}`);
     generateButton.textContent = 'Generate Audio Guide';
     generateButton.disabled = false;
   }
