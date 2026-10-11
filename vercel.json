@@ -1,23 +1,6 @@
 ﻿{
-  "version": 2,
-  "builds": [
-    {
-      "src": "Backend/app.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "Frontend/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/generate-audio-guide",
-      "dest": "Backend/app.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "Frontend/"
-    }
+  "rewrites": [
+    { "source": "/generate-audio-guide", "destination": "/api/index" },
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
